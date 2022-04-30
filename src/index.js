@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import {
-    getFirestore, collection
+    getFirestore, collection, getDocs,
+    addDoc, deleteDoc, doc
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -22,3 +23,39 @@ const db = getFirestore()
 const colRef = collection(db, 'paintings')
 
 // get collection data
+getDocs(colRef)
+  .then((snapshot) => {
+      let paintings = []
+      snapshot.docs.forEach((doc) => {
+          paintings.push({ ...doc.data(), id: doc.id })
+      })
+      console.log(paintings)
+  })
+  .catch(err => {
+      console.log(err.message)
+  })
+
+  // adding documents
+  const addPaintingForm = document.querySelector('.add')
+  addPaintingForm.addEventListener('submit', (e) => {
+      e.preventDefault()
+
+      addDoc(colRef, {
+          artist: addPaintingForm.artist.value,
+          price: addPaintingForm.price.value,
+          type: addPaintingForm.type.value,
+      }).then(() => {
+          addPaintingForm.reset()
+        })
+  })
+
+  // deleting documents
+  const deletePaintingForm = document.querySelector('.delete')
+  deletePaintingForm.addEventListener('submit', (e) => {
+      e.preventDefault()
+
+      const docRef = doc(db, 'paintings', deletePaintingForm.id.value )
+      deleteDoc(docRef).then(() => {
+        deletePaintingForm.reset()
+      })
+  })
