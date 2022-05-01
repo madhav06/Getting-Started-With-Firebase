@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import {
     getFirestore, collection, getDocs,
-    addDoc, deleteDoc, doc
+    addDoc, deleteDoc, doc, ref, remove
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -36,26 +36,38 @@ getDocs(colRef)
   })
 
   // adding documents
-  const addPaintingForm = document.querySelector('.add')
-  addPaintingForm.addEventListener('submit', (e) => {
+  const addPaintForm = document.querySelector('.add')
+  addPaintForm.addEventListener('submit', (e) => {
       e.preventDefault()
 
       addDoc(colRef, {
-          artist: addPaintingForm.artist.value,
-          price: addPaintingForm.price.value,
-          type: addPaintingForm.type.value,
-      }).then(() => {
-          addPaintingForm.reset()
-        })
+        artist: addPaintForm.artist.value,
+        price: addPaintForm.price.value,
+        type: addPaintForm.type.value
+      })
+      .then(() => {
+          console.log('Document added!')
+      })
+      .catch(() => {
+          console.log('unsuccessful !')
+      })
+      
   })
 
   // deleting documents
-  const deletePaintingForm = document.querySelector('.delete')
-  deletePaintingForm.addEventListener('submit', (e) => {
+  const deletePaintForm = document.querySelector('.delete')
+  deletePaintForm.addEventListener('submit', (e) => {
       e.preventDefault()
 
-      const docRef = doc(db, 'paintings', deletePaintingForm.id.value )
-      deleteDoc(docRef).then(() => {
-        deletePaintingForm.reset()
+      
+      const docRef = doc(db, 'paintings', deletePaintForm.id.value)
+
+      deleteDoc(docRef)
+      .then(() => {
+          console.log('Document deleted!')
+      })
+      .catch(() => {
+          console.log('unsuccessful !')
       })
   })
+
