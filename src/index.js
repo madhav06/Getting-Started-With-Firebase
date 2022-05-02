@@ -1,7 +1,11 @@
 import { initializeApp } from 'firebase/app'
 import {
-    getFirestore, collection, getDocs,
-    addDoc, deleteDoc, doc, ref, remove
+    getFirestore, collection, onSnapshot,
+    addDoc, deleteDoc, doc,
+    query, where,
+    orderBy, serverTimestamp,
+    getDoc,
+    connectFirestoreEmulator
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -22,18 +26,38 @@ const db = getFirestore()
 // collection ref
 const colRef = collection(db, 'paintings')
 
+// queries
+const q = query(colRef, orderBy('createdAt'))
+
+onSnapshot(q, (snapshot) => {
+    let paintings = []
+    snapshot.docs.forEach((doc) => {
+        paintings.push({ ...doc.data(), id: doc.id})
+    })
+    console.log(paintings)
+})
+
 // get collection data
-getDocs(colRef)
-  .then((snapshot) => {
-      let paintings = []
-      snapshot.docs.forEach((doc) => {
-          paintings.push({ ...doc.data(), id: doc.id })
-      })
-      console.log(paintings)
-  })
-  .catch(err => {
-      console.log(err.message)
-  })
+// getDocs(colRef)
+//   .then((snapshot) => {
+//       let paintings = []
+//       snapshot.docs.forEach((doc) => {
+//           paintings.push({ ...doc.data(), id: doc.id })
+//       })
+//       console.log(paintings)
+//   })
+//   .catch(err => {
+//       console.log(err.message)
+//   })
+
+// real-time collection data
+//   onSnapshot(colRef, (snapshot) => {
+//       let paintings = []
+//       snapshot.docs.forEach((doc) => {
+//           paintings.push({ ...doc.data(), id: doc.id})
+//       })
+//       console.log(paintings)
+//   })
 
   // adding documents
   const addPaintForm = document.querySelector('.add')
@@ -43,7 +67,8 @@ getDocs(colRef)
       addDoc(colRef, {
         artist: addPaintForm.artist.value,
         price: addPaintForm.price.value,
-        type: addPaintForm.type.value
+        type: addPaintForm.type.value,
+        createdAt: serverTimestamp()
       })
       .then(() => {
           console.log('Document added!')
@@ -69,5 +94,12 @@ getDocs(colRef)
       .catch(() => {
           console.log('unsuccessful !')
       })
+  })
+
+  // get a single document
+  const docRef = doc(db, 'paintings', 'phFXoRlekCpRdeKOtHQd' )
+
+  onSnapshot(docRef, (doc) => {
+      console.log(doc.data(), doc.id)
   })
 
