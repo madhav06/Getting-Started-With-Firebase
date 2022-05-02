@@ -4,7 +4,7 @@ import {
     addDoc, deleteDoc, doc,
     query, where,
     orderBy, serverTimestamp,
-    getDoc,
+    getDoc, updateDoc,
     connectFirestoreEmulator
 } from 'firebase/firestore'
 
@@ -102,4 +102,22 @@ onSnapshot(q, (snapshot) => {
   onSnapshot(docRef, (doc) => {
       console.log(doc.data(), doc.id)
   })
+
+// get a single document
+const updateForm = document.querySelector('.update')
+updateForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    const docRef = doc(db, 'paintings', updateForm.id.value)
+
+    updateDoc(docRef, {
+        price: 'updated price'
+    })
+    .then(() => {
+        console.log('Document updated!')
+    })
+    .catch(() => {
+        console.log('unsuccessful !')
+    })
+})
 
