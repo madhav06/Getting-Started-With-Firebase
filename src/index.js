@@ -8,6 +8,11 @@ import {
     connectFirestoreEmulator
 } from 'firebase/firestore'
 
+import {
+    getAuth,
+    createUserWithEmailAndPassword,
+} from 'firebase/auth'
+
 const firebaseConfig = {
     apiKey: "AIzaSyBz9YNK6fvd97fD-wmKAumTGtwFcPq_R80",
     authDomain: "fir-9-endgame.firebaseapp.com",
@@ -22,6 +27,9 @@ initializeApp(firebaseConfig)
 
 // init services
 const db = getFirestore()
+
+//authentication services
+const auth = getAuth()
 
 // collection ref
 const colRef = collection(db, 'paintings')
@@ -119,5 +127,22 @@ updateForm.addEventListener('submit', (e) => {
     .catch(() => {
         console.log('unsuccessful !')
     })
+})
+
+// signing users up
+const signupForm = document.querySelector('.signup')
+signupForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const email = signupForm.email.value
+    const password = signupForm.password.value
+
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((cred) => {
+        console.log('user created!', cred.user)
+    })
+    .catch((err) => {
+        console.log(err.message)
+    })
+
 })
 
